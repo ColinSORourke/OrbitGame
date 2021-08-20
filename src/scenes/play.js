@@ -20,7 +20,7 @@ class Play extends Phaser.Scene {
         let s = this.orbit.getStartPoint()
         this.planet = this.add.follower(this.orbit, s.x, s.y, 'Comet')
         this.planet.startFollow({
-            duration: 15000,
+            duration: 10000,
             from: 0,
             to: 1,
             rotateToPath: false,
@@ -30,18 +30,27 @@ class Play extends Phaser.Scene {
         this.physics.add.existing(this.planet)
         this.planet.body.setCircle(35, 30, 30)
         this.planet.body.angularVelocity = 15
+        this.planet.setTint(0xA5FFD6)
 
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
         this.ship = this.physics.add.sprite(game.config.width, game.config.height, 'Ship')
+        this.ship.body.setSize(64,64)
+        this.ship.setScale(0.5)
         this.ship.setVelocity(0,-50)
+
+        this.landing = this.physics.add.overlap(this.ship, this.planet, function(ship, planet){
+            ship.setVelocity(0,0)
+            ship.x = planet.x
+            ship.y = planet.y
+            ship.body.angularVelocity = planet.body.angularVelocity
+        })
+        console.log(this.landing)
 
         // set up main camera to follow the player
         this.cameras.main.setBounds(0, 0, 2000, 1500);
         this.cameras.main.setZoom(1);
         this.cameras.main.startFollow(this.ship);
-        
-
 
         // Add Pause Button
         this.pauseButton = this.add.text(game.config.width/2, game.config.height - 25, 'PAUSE', 20).setOrigin(0.5)
@@ -54,11 +63,13 @@ class Play extends Phaser.Scene {
 
     update(){
         if(Phaser.Input.Keyboard.JustDown(keySPACE)){
-            this.ship.setAngularVelocity(45)
+            this.ship.setAngularVelocity(45) 
+            this.landing.active = false        
         }
         if(Phaser.Input.Keyboard.JustUp(keySPACE)){
             this.ship.setAngularVelocity(0)
             this.changeDir(this.ship)
+            this.landing.active = true
         }
     }
 
