@@ -7,6 +7,7 @@ class Preload extends Phaser.Scene
     preload ()
     {   
         this.load.image('Head', './assets/ColinHead.jpg');
+        this.load.image('Sun', './assets/kenney_simplespace/PNG/Retina/meteor_squareLarge.png')
 
         this.createProgressbar(game.config.width / 2, game.config.height / 2);
     }

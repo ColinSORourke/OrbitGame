@@ -7,7 +7,7 @@ class Play extends Phaser.Scene {
         console.log("We did it!")
 
         // Bouncing Head
-        this.head = this.physics.add.sprite(game.config.width/2, game.config.height/2, 'Head')
+        this.head = this.physics.add.sprite(game.config.width/2, game.config.height/2, 'Sun')
         this.head.setCollideWorldBounds(true)
         this.head.body.onWorldBounds = true
         this.head.setVelocity(Phaser.Math.Between(100, 300), Phaser.Math.Between(100, 300));
