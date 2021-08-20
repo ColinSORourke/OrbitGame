@@ -4,37 +4,74 @@ class Play extends Phaser.Scene {
     }
 
     create(){
-        console.log("We did it!")
 
-        // Bouncing Head
-        this.head = this.physics.add.sprite(game.config.width/2, game.config.height/2, 'Sun')
-        this.head.setCollideWorldBounds(true)
-        this.head.body.onWorldBounds = true
-        this.head.setVelocity(Phaser.Math.Between(100, 300), Phaser.Math.Between(100, 300));
-        this.head.setBounce(1)
+        let graphics = this.add.graphics();
 
-        this.physics.world.on('worldbounds', this.onBounce);
+        // Add Sun in Center
+        this.star = this.physics.add.sprite(game.config.width/2, game.config.height/2, 'Sun')
+        this.star.setCircle(50, 15, 15)
+        this.star.body.angularVelocity = 30
 
+        // Create Orbit Path
+        this.orbit = this.createOrbit(300, game.config.width/2, game.config.height/2)
+        this.orbit.draw(graphics)
+
+        // Add Planet to Orbit
+        let s = this.orbit.getStartPoint()
+        this.planet = this.add.follower(this.orbit, s.x, s.y, 'Comet')
+        this.planet.startFollow({
+            duration: 15000,
+            from: 0,
+            to: 1,
+            rotateToPath: false,
+            startAt: 0,
+            repeat: -1
+        })
+        this.physics.add.existing(this.planet)
+        this.planet.body.setCircle(35, 30, 30)
+        this.planet.body.angularVelocity = 15
+
+        keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+        this.ship = this.physics.add.sprite(game.config.width/2, game.config.height/2, 'Ship')
+        this.ship.setVelocity(0,-50)
+
+
+        // Add Pause Button
         this.pauseButton = this.add.text(game.config.width/2, game.config.height - 25, 'PAUSE', 20).setOrigin(0.5)
-        // Give Menu Button purpose
         this.pauseButton.setInteractive();
         this.pauseButton.on('pointerdown', () => {
             this.pause();
         });
     }
 
-    onBounce(body){
-        let color = new Phaser.Display.Color()
-        color.random(50)
-        body.gameObject.setTint(color.color)
-    }
-
     update(){
-        
+        if(Phaser.Input.Keyboard.JustDown(keySPACE)){
+            this.ship.setAngularVelocity(45)
+        }
+        if(Phaser.Input.Keyboard.JustUp(keySPACE)){
+            this.ship.setAngularVelocity(0)
+            this.changeDir(this.ship)
+        }
     }
 
     pause() {
         this.scene.pause();
         this.scene.launch('pauseScene', { srcScene: "playScene" });
+    }
+
+    createOrbit(radius, x, y){
+        let orbit = this.add.path(x + radius, y)
+        orbit.circleTo(radius)
+        return orbit
+    }
+
+    changeDir(object){
+        let origVel = object.body.velocity
+        let direction = object.angle * (Math.PI/180)
+        let magnitude = Math.sqrt(Math.pow(origVel.x, 2) + Math.pow(origVel.y, 2))
+        let newX = Math.sin(direction) * magnitude
+        let newY = - ( Math.cos(direction) * magnitude )
+        object.setVelocity(newX, newY)
     }
 }
