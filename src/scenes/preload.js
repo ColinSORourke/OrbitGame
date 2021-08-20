@@ -7,8 +7,14 @@ class Preload extends Phaser.Scene
     preload ()
     {   
         this.load.image('Head', './assets/ColinHead.jpg');
-        this.load.image('Sun', './assets/kenney_simplespace/PNG/Retina/meteor_squareLarge.png')
-        this.load.image('Comet', './assets/kenney_simplespace/PNG/Retina/meteor_squareDetailedSmall.png')
+        this.load.image('meteor_000', './assets/kenney_simplespace/PNG/Retina/meteor_small.png')
+        this.load.image('meteor_001', './assets/kenney_simplespace/PNG/Retina/meteor_large.png')
+        this.load.image('meteor_100', './assets/kenney_simplespace/PNG/Retina/meteor_squareSmall.png')
+        this.load.image('meteor_101', './assets/kenney_simplespace/PNG/Retina/meteor_squareLarge.png')
+        this.load.image('meteor_010', './assets/kenney_simplespace/PNG/Retina/meteor_detailedSmall.png')
+        this.load.image('meteor_011', './assets/kenney_simplespace/PNG/Retina/meteor_detailedLarge.png')
+        this.load.image('meteor_110', './assets/kenney_simplespace/PNG/Retina/meteor_squareDetailedSmall.png')
+        this.load.image('meteor_111', './assets/kenney_simplespace/PNG/Retina/meteor_squareDetailedLarge.png')
         this.load.image('Ship', './assets/kenney_simplespace/PNG/Retina/ship_A.png')
 
         this.load.svg('FullSet', './assets/kenney_simplespace/Vector/simpleSpace_vector.svg', { scale: 1})
