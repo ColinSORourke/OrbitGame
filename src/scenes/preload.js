@@ -15,6 +15,9 @@ class Preload extends Phaser.Scene
         this.load.image('meteor_011', './assets/kenney_simplespace/PNG/Retina/meteor_detailedLarge.png')
         this.load.image('meteor_110', './assets/kenney_simplespace/PNG/Retina/meteor_squareDetailedSmall.png')
         this.load.image('meteor_111', './assets/kenney_simplespace/PNG/Retina/meteor_squareDetailedLarge.png')
+        this.load.image('starA', './assets/kenney_simplespace/PNG/Retina/star_large.png')
+        this.load.image('starB', './assets/kenney_simplespace/PNG/Retina/star_medium.png')
+        this.load.image('starParticle', './assets/kenney_simplespace/PNG/Retina/star_small.png')
         this.load.image('Ship', './assets/kenney_simplespace/PNG/Retina/ship_A.png')
 
         this.load.svg('FullSet', './assets/kenney_simplespace/Vector/simpleSpace_vector.svg', { scale: 1})

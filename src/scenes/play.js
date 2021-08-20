@@ -4,19 +4,50 @@ class Play extends Phaser.Scene {
     }
 
     create(){
+        
+
+        keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+        keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
 
         let graphics = this.add.graphics();
 
+
+        let galaxySizeX = 2000
+        let galaxySizeY = 1500
+        let galaxyMiddleX = galaxySizeX/2
+        let galaxyMiddleY = galaxySizeY/2
+
         // Add Sun in Center
-        this.star = this.physics.add.sprite(game.config.width, game.config.height, 'meteor_101')
+        var particles = this.add.particles('starParticle');
+        var emitter = particles.createEmitter({
+            x: galaxyMiddleX,
+            y: galaxyMiddleY,
+            speed: 80,
+            lifespan: {min: 1000, max: 1500},
+            frequency: 120,
+            tint: 0xFC814A,
+            rotate: {min: -30, max: 30},
+            alpha: {min: 0.25, max: 0.75},
+            scale: {min: 0.6, max: 1.2}
+        })
+        this.starBG = this.physics.add.sprite(galaxyMiddleX, galaxyMiddleY, 'starB').setScale(2)
+        this.starBG.setTint(0xE9D758)
+        this.star = this.physics.add.sprite(galaxyMiddleX, galaxyMiddleY, 'starA').setTint(0xFFAB45)
+        this.starBG.angle = 45
+        this.starBG.body.angularVelocity = 30
         this.star.setCircle(50, 15, 15)
+        this.starBG.setSize(2,2)
         this.star.body.angularVelocity = 30
+        this.star.setScale(1.5)
+
+        
 
         // Create Orbit Path
-        this.orbit = this.createOrbit(300, game.config.width, game.config.height)
+        this.orbit = this.createOrbit(300, galaxyMiddleX, galaxyMiddleY)
         this.orbit.draw(graphics)
 
-        // Add Planet to Orbit
+        // Create Several Planets
         let planets = this.add.group({
             classType: Phaser.GameObjects.Sprite,
             defaultKey: null,
@@ -26,20 +57,13 @@ class Play extends Phaser.Scene {
             runChildUpdate: true
         })
         console.log(planets)
-
-
         let i = 0
         while (i < 1){
-            let planet = this.createPlanet(this.orbit, true, true, false)
+            let planet = this.createPlanet(this.orbit, false, true, true)
             this.initPlanet(planet, 10000, i, 15, 0xA5FFD6)
             planets.add(planet)
             i += 0.2
         }
-        
-
-        keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
-        keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
 
         this.ship = this.physics.add.sprite(game.config.width, game.config.height, 'Ship')
         this.playerSpeed = 250
@@ -55,7 +79,7 @@ class Play extends Phaser.Scene {
         })
 
         // set up main camera to follow the player
-        this.cameras.main.setBounds(0, 0, 2000, 1500);
+        this.cameras.main.setBounds(0, 0, galaxySizeX, galaxySizeY);
         this.cameras.main.setZoom(1);
         this.cameras.main.startFollow(this.ship);
 
@@ -69,25 +93,34 @@ class Play extends Phaser.Scene {
     }
 
     update(){
+        if (Phaser.Input.Keyboard.JustDown(keySPACE)){
+            this.landing.active = false
+            this.changeDir(this.ship)
+            this.ship.setAngularVelocity(0)
+            var timer = this.time.addEvent({
+                delay: 2000,                // ms
+                callback: function(){
+                    this.landing.active = true
+                },
+                callbackScope: this,
+                loop: false
+            });
+        }
         if(Phaser.Input.Keyboard.JustDown(keyRIGHT)){
             this.changeDir(this.ship)
-            this.ship.setAngularVelocity(90) 
-            this.landing.active = false        
+            this.ship.setAngularVelocity(90)     
         }
         if(Phaser.Input.Keyboard.JustUp(keyRIGHT)){
             this.ship.setAngularVelocity(0)
             this.changeDir(this.ship)
-            this.landing.active = true
         }
         if(Phaser.Input.Keyboard.JustDown(keyLEFT)){
             this.changeDir(this.ship)
-            this.ship.setAngularVelocity(-90) 
-            this.landing.active = false        
+            this.ship.setAngularVelocity(-90)    
         }
         if(Phaser.Input.Keyboard.JustUp(keyLEFT)){
             this.ship.setAngularVelocity(0)
             this.changeDir(this.ship)
-            this.landing.active = true
         }
     }
 
@@ -107,7 +140,7 @@ class Play extends Phaser.Scene {
         let planet = this.add.follower(path, s.x, s.y, "meteor_" + (square | 0) + (detailed | 0) + (large | 0))
         this.physics.add.existing(planet)
         if (large){
-            planet.body.setCircle(50, 15, 15)
+            planet.body.setCircle(40, 24, 24)
         } else {
             planet.body.setCircle(35, 30, 30)
         }
