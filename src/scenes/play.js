@@ -8,12 +8,12 @@ class Play extends Phaser.Scene {
         let graphics = this.add.graphics();
 
         // Add Sun in Center
-        this.star = this.physics.add.sprite(game.config.width/2, game.config.height/2, 'Sun')
+        this.star = this.physics.add.sprite(game.config.width, game.config.height, 'Sun')
         this.star.setCircle(50, 15, 15)
         this.star.body.angularVelocity = 30
 
         // Create Orbit Path
-        this.orbit = this.createOrbit(300, game.config.width/2, game.config.height/2)
+        this.orbit = this.createOrbit(300, game.config.width, game.config.height)
         this.orbit.draw(graphics)
 
         // Add Planet to Orbit
@@ -33,8 +33,14 @@ class Play extends Phaser.Scene {
 
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-        this.ship = this.physics.add.sprite(game.config.width/2, game.config.height/2, 'Ship')
+        this.ship = this.physics.add.sprite(game.config.width, game.config.height, 'Ship')
         this.ship.setVelocity(0,-50)
+
+        // set up main camera to follow the player
+        this.cameras.main.setBounds(0, 0, 2000, 1500);
+        this.cameras.main.setZoom(1);
+        this.cameras.main.startFollow(this.ship);
+        
 
 
         // Add Pause Button
@@ -43,6 +49,7 @@ class Play extends Phaser.Scene {
         this.pauseButton.on('pointerdown', () => {
             this.pause();
         });
+        this.pauseButton.setScrollFactor(0)
     }
 
     update(){
