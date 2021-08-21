@@ -6,12 +6,10 @@ class Play extends Phaser.Scene {
     create(){
         
 
-        keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
-        keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
-
-        let graphics = this.add.graphics();
-
+        keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
+        keyUP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP)
+        keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT)
+        keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT)
 
         let galaxySizeX = 4000
         let galaxySizeY = 4000
@@ -64,7 +62,9 @@ class Play extends Phaser.Scene {
         this.cameras.main.setBounds(0, 0, galaxySizeX, galaxySizeY);
         this.cameras.main.setZoom(1);
         this.cameras.main.startFollow(this.ship);
-        this.minimap = this.cameras.add(game.config.width - 200, 0, 200, 200).setZoom(100/galaxySizeX).setName('mini');
+        this.minimap = this.cameras.add(300, 175, 400, 400).setZoom(400/galaxySizeX).setName('mini');
+        this.minimap.centerOn(galaxyMiddleX, galaxyMiddleY)
+        this.minimap.setVisible(false)
 
         // Add Pause Button
         this.pauseButton = this.add.text(game.config.width/2, game.config.height - 25, 'PAUSE', 20).setOrigin(0.5)
@@ -84,6 +84,13 @@ class Play extends Phaser.Scene {
         this.shipTrail.angle = this.ship.angle
 
         if (Phaser.Input.Keyboard.JustDown(keySPACE)){
+            this.minimap.setVisible(true)
+        }
+        if (Phaser.Input.Keyboard.JustUp(keySPACE)){
+            this.minimap.setVisible(false)
+        }
+
+        if (Phaser.Input.Keyboard.JustDown(keyUP)){
             this.landing.active = false
             this.landed = false
             this.shipTrail.visible = true
@@ -159,7 +166,6 @@ class Play extends Phaser.Scene {
     }
 
     changeDir(object){
-        let origVel = object.body.velocity
         let direction = object.angle * (Math.PI/180)
         let newX = Math.sin(direction) * this.playerSpeed
         let newY = - ( Math.cos(direction) * this.playerSpeed )
@@ -198,7 +204,7 @@ class Play extends Phaser.Scene {
             }
             let planet = this.createPlanet(this.orbits[i], square, detailed, large, size)
 
-            let time = 5000 + (i+1) * 1500 + Phaser.Math.Between(1,20) * 750
+            let time = 5000 + (i+1) * 2000 + Phaser.Math.Between(1,20) * 750
             let pos = Math.random()
             let angle = Phaser.Math.Between(20,60)
             color.random();
