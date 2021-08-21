@@ -57,7 +57,7 @@ class Play extends Phaser.Scene {
         this.minimap.ignore(BG)
 
         // Add Pause Button
-        this.pauseButton = this.add.text(game.config.width/2, game.config.height - 25, 'PAUSE', 20).setOrigin(0.5)
+        this.pauseButton = this.add.text(game.config.width/2, game.config.height - 25, 'PAUSE', { fontFamily: 'font1', fontSize: 50}).setOrigin(0.5)
         this.pauseButton.setInteractive();
         this.pauseButton.on('pointerdown', () => {
             this.pause();

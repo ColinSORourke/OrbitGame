@@ -4,14 +4,24 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Template</title>
+    <title>Orbit Something</title>
     <style>
         body {
             background-color: beige;
         }
     </style>
+    <link rel="preload" as="font" href="assets/kenney_fontpackage/Fonts/NarrowFuture.ttf" type="font/ttf" />
+    <style media='screen' type='text/css'>
+        @font-face {
+          font-family: font1;
+          src: url('assets/kenney_fontpackage/Fonts/NarrowFuture.ttf');
+          font-weight:400;
+          font-weight:normal;
+        }
+    </style>
 </head>
 <body>
+    <div style="font-family:font1; position:absolute; left:-1000px; visibility:hidden;">.</div>
     <script src = "./lib/phaser.js"></script>
     <script src = "./src/classes/ship.js"></script>
     <script src = "./src/scenes/preload.js"></script>
@@ -20,4 +30,4 @@
     <script src = "./src/scenes/pause.js"></script>
     <script src = "./src/main.js"></script>
 </body>
-</html>
+</html> 

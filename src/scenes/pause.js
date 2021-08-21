@@ -11,7 +11,7 @@ class Pause extends Phaser.Scene {
         var spacing = 64;
 
         // Add Reset text & button
-        var resetButton = this.add.text(game.config.width/2, game.config.height/3, 'RESET', 32).setOrigin(0.5);
+        var resetButton = this.add.text(game.config.width/2, game.config.height/3, 'RESET', { fontFamily: 'font1', fontSize: 50}).setOrigin(0.5);
         resetButton.setInteractive();
         resetButton.on('pointerdown', () => {
             this.scene.stop(this.pausedScene);
@@ -19,7 +19,7 @@ class Pause extends Phaser.Scene {
         });
 
         // Add Back text & button
-        var backButton = this.add.text(game.config.width/2, game.config.height * (2/3), 'BACK', 32).setOrigin(0.5);
+        var backButton = this.add.text(game.config.width/2, game.config.height * (2/3), 'BACK', { fontFamily: 'font1', fontSize: 50}).setOrigin(0.5);
         backButton.setInteractive();
         backButton.on('pointerdown', () => {
             this.scene.resume(this.pausedScene);
