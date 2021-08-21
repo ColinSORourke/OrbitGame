@@ -78,7 +78,7 @@ class Preload extends Phaser.Scene
         {
 
             this.load.off('progress', updateProgressbar);
-            this.scene.start('playScene');
+            this.scene.start('menuScene');
 
         }, this);
     }
