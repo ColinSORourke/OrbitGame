@@ -20,6 +20,8 @@ class Preload extends Phaser.Scene
         this.load.image('starParticle', './assets/kenney_simplespace/PNG/Retina/star_small.png')
         this.load.image('Ship', './assets/kenney_simplespace/PNG/Retina/ship_L.png')
         this.load.image('Trail', './assets/kenney_simplespace/PNG/Retina/effect_purple.png')
+        this.load.image('UISquare', './assets/uipack-space/PNG/glassPanel_cornerBR.png')
+        this.load.image('Satellite', './assets/kenney_simplespace/PNG/Retina/satellite_A.png')
 
         this.load.image('BG', './assets/spaceshooter/Backgrounds/blue.png')
 

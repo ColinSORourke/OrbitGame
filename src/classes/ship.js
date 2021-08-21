@@ -16,6 +16,7 @@ class Ship extends Phaser.GameObjects.Sprite {
         this.fuel = 1
         this.speed = 300
         this.landed = false
+        this.on = false
         this.empty = false
 
         let width = 400;
@@ -50,7 +51,7 @@ class Ship extends Phaser.GameObjects.Sprite {
             delay: 500,                // ms
             callback: function(){
                 if (!(this.landed) && this.fuel > 0){
-                    this.fuel -= 0.015
+                    this.fuel -= 0.02
                     this.updateFuel()
                 }
             },
@@ -74,6 +75,7 @@ class Ship extends Phaser.GameObjects.Sprite {
             if (Phaser.Input.Keyboard.JustDown(keyUP)){
                 this.scene.planetCollider.active = false
                 this.landed = false
+                this.on = false
                 this.snapDirection()
                 this.body.setAngularVelocity(0)
                 var timer = this.scene.time.addEvent({
@@ -88,7 +90,7 @@ class Ship extends Phaser.GameObjects.Sprite {
             if (!(this.landed)){
                 if(Phaser.Input.Keyboard.JustDown(keyRIGHT)){
                     this.snapDirection()
-                    this.fuel -= 0.05
+                    this.fuel -= 0.03
                     this.trail.visible = false
                     this.body.setAngularVelocity(150)     
                 }
@@ -98,7 +100,7 @@ class Ship extends Phaser.GameObjects.Sprite {
                 }
                 if(Phaser.Input.Keyboard.JustDown(keyLEFT)){
                     this.snapDirection()
-                    this.fuel -= 0.05
+                    this.fuel -= 0.03
                     this.trail.visible = false
                     this.body.setAngularVelocity(-150)    
                 }
@@ -121,6 +123,7 @@ class Ship extends Phaser.GameObjects.Sprite {
             ship.fuel = 1
             ship.updateFuel()
             ship.landed = true
+            ship.on = planet.name
             ship.trail.visible = false
         }
         ship.x = planet.x
