@@ -69,7 +69,7 @@ class Ship extends Phaser.GameObjects.Sprite {
         this.trail.y = this.y
         this.trail.angle = this.angle
 
-        if (this.fuel > 0){
+        if (!this.empty){
             this.speed = 300
             if (Phaser.Input.Keyboard.JustDown(keyUP)){
                 this.scene.planetCollider.active = false
@@ -115,7 +115,8 @@ class Ship extends Phaser.GameObjects.Sprite {
             ship.body.setVelocity(0,0)
             ship.body.angularVelocity = planet.body.angularVelocity
             if (ship.empty){
-                scene.cameras.main.fadeFrom(1000, 0, 0, 0, true)
+                ship.scene.cameras.main.fadeFrom(1000, 0, 0, 0, true)
+                ship.empty = false
             }
             ship.fuel = 1
             ship.updateFuel()
@@ -143,14 +144,14 @@ class Ship extends Phaser.GameObjects.Sprite {
         let yStart = 20;
         this.fuelBar.clear();
         this.fuelBar.fillStyle(0xffffff, 1);
-        this.fuelBar.fillRect(xStart, yStart, this.fuel * width, height);
-        if (this.shipFuel <= 0){
-            this.setVelocity(0,0)
-            this.setAngularVelocity(0)
+        this.fuelBar.fillRect(xStart, yStart, Math.max(0, this.fuel) * width, height);
+        if (this.fuel <= 0){
+            this.body.setVelocity(0,0)
+            this.body.setAngularVelocity(0)
             this.speed = 0
             this.trail.visible = false
             this.empty = true
-            scene.camera.main.fadeOut(6000)
+            this.scene.cameras.main.fadeOut(6000)
         }
     }
 }

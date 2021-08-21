@@ -41,10 +41,11 @@ class Play extends Phaser.Scene {
         this.star.body.angularVelocity = 30
         this.star.setScale(1.5)
 
-        this.randomGalaxy(galaxyMiddleX, galaxyMiddleY)
+        let randomPlanet = this.randomGalaxy(galaxyMiddleX, galaxyMiddleY)
 
-        this.ship = new Ship(this, galaxyMiddleX, galaxyMiddleY, 'Ship', null)
+        this.ship = new Ship(this, randomPlanet.x, randomPlanet.y, 'Ship', null)
         this.planetCollider = this.physics.add.overlap(this.ship, this.planets, this.ship.land, null, this)
+        this.sunCollider = this.physics.add.overlap(this.ship, this.star, this.gameOver, null, this)
 
         // set up main camera to follow the player
         this.cameras.main.setBounds(0, 0, galaxySizeX, galaxySizeY);
@@ -135,8 +136,10 @@ class Play extends Phaser.Scene {
         // Create Orbit Path
         this.orbits = []
         let i = 0
-        let maxOrb = Phaser.Math.Between(6,8)
+        let maxOrb = Phaser.Math.Between(5,8)
         let startingOrbit = 120
+        let target = Phaser.Math.Between(0, maxOrb - 1)
+
         while (i < maxOrb){
             startingOrbit += Phaser.Math.Between(120,320)
             let dir = (Math.random() > 0.5)
@@ -152,11 +155,15 @@ class Play extends Phaser.Scene {
             }
             let planet = this.createPlanet(this.orbits[i], square, detailed, large, size)
 
-            let time = 6000 + (i+1) * 2250 + Phaser.Math.Between(1,20) * 750
+            let time = 6000 + (i+1) * 2250 + Phaser.Math.Between(1,62 - (4*maxOrb)) * 750 
             let pos = Math.random()
             let angle = Phaser.Math.Between(20,60)
             color.random();
             
+            if (i == target){
+                pos = 0
+            }
+
             this.initPlanet(planet, time, pos, angle, color.color, dir)
             if (Math.random() > 0.9){
                 color.random()
@@ -171,8 +178,13 @@ class Play extends Phaser.Scene {
             }
 
             this.planets.add(planet)
+            if (i == target){
+                target = planet
+            }
+
             i += 1
         }        
+        return target
     }
 
     gameOver(){
