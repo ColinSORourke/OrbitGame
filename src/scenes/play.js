@@ -4,8 +4,6 @@ class Play extends Phaser.Scene {
     }
 
     create(){
-        
-
         keySPACE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
         keyUP = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP)
         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT)
@@ -15,6 +13,32 @@ class Play extends Phaser.Scene {
         let galaxySizeY = 4000
         let galaxyMiddleX = galaxySizeX/2
         let galaxyMiddleY = galaxySizeY/2
+
+        this.musicConfig =  {
+            mute: false,
+            volume: 1,
+            rate: 1,
+            detune: 0,
+            seek: 0,
+            loop: true,
+            delay: 0
+        };
+
+        this.sfxConfig = {
+            mute: false,
+            volume: 1,
+            rate: 1,
+            detune: 0,
+            seek: 0,
+            loop: false,
+            delay: 0
+        }
+
+        this.music = this.sound.add('Cycad', this.musicConfig)
+        //this.sfx = this.sound.add('test', this.sfxConfig)
+        this.music.play()
+
+        let BG = this.add.tileSprite(0,0, 4000, 4000, "BG").setOrigin(0,0)
 
         // Add Sun in Center
         var particles = this.add.particles('starParticle');
@@ -65,6 +89,7 @@ class Play extends Phaser.Scene {
         this.minimap = this.cameras.add(300, 175, 400, 400).setZoom(400/galaxySizeX).setName('mini');
         this.minimap.centerOn(galaxyMiddleX, galaxyMiddleY)
         this.minimap.setVisible(false)
+        this.minimap.ignore(BG)
 
         // Add Pause Button
         this.pauseButton = this.add.text(game.config.width/2, game.config.height - 25, 'PAUSE', 20).setOrigin(0.5)
@@ -84,6 +109,7 @@ class Play extends Phaser.Scene {
         this.shipTrail.angle = this.ship.angle
 
         if (Phaser.Input.Keyboard.JustDown(keySPACE)){
+            //this.sfx.play()
             this.minimap.setVisible(true)
         }
         if (Phaser.Input.Keyboard.JustUp(keySPACE)){

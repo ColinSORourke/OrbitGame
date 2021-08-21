@@ -21,7 +21,14 @@ class Preload extends Phaser.Scene
         this.load.image('Ship', './assets/kenney_simplespace/PNG/Retina/ship_L.png')
         this.load.image('Trail', './assets/kenney_simplespace/PNG/Retina/effect_purple.png')
 
+        this.load.image('BG', './assets/spaceshooter/Backgrounds/blue.png')
+
         this.load.svg('FullSet', './assets/kenney_simplespace/Vector/simpleSpace_vector.svg', { scale: 1})
+
+        // https://twitter.com/everydaylouie/status/1253021154857508864 
+        this.load.audio('Cycad', './assets/LZ_Greenhouse/CycadConga.mp3')
+
+        //this.load.audio('test', './assets/spaceshooter/Bonus/sfx_twoTone.ogg')
 
         this.createProgressbar(game.config.width / 2, game.config.height / 2);
     }
