@@ -14,6 +14,8 @@ class Play extends Phaser.Scene {
         let galaxyMiddleX = galaxySizeX/2
         let galaxyMiddleY = galaxySizeY/2
 
+        let camera = this.cameras.main
+
         this.musicConfig =  {
             mute: false,
             volume: 1,
@@ -24,21 +26,13 @@ class Play extends Phaser.Scene {
             delay: 0
         };
 
-        this.sfxConfig = {
-            mute: false,
-            volume: 1,
-            rate: 1,
-            detune: 0,
-            seek: 0,
-            loop: false,
-            delay: 0
-        }
-
         this.music = this.sound.add('Cycad', this.musicConfig)
-        //this.sfx = this.sound.add('test', this.sfxConfig)
         this.music.play()
+        
 
         let BG = this.add.tileSprite(0,0, 4000, 4000, "BG").setOrigin(0,0)
+
+        let UIGroup = this.add.group()
 
         // Add Sun in Center
         var particles = this.add.particles('starParticle');
@@ -69,15 +63,23 @@ class Play extends Phaser.Scene {
         this.ship = this.physics.add.sprite(galaxyMiddleX, galaxyMiddleY, 'Ship')
         this.shipTrail.setOrigin(0.5,0)
         this.playerSpeed = 300
+        this.shipFuel = 1
         this.ship.body.setSize(64,64)
         this.ship.setScale(0.3)
         this.changeDir(this.ship)
+        
 
         this.landing = this.physics.add.overlap(this.ship, this.planets, function(ship, planet){
             ship.setVelocity(0,0)
             ship.x = planet.x
             ship.y = planet.y
             ship.body.angularVelocity = planet.body.angularVelocity
+            if (this.shipFuel <= 0){
+                console.log(camera)
+                camera.fadeFrom(1000, 0, 0, 0, true)
+            }
+            this.shipFuel = 1
+            this.updateFuel()
             this.landed = true
             this.shipTrail.visible = false
         }, null, this)
@@ -99,8 +101,62 @@ class Play extends Phaser.Scene {
         });
         this.pauseButton.setScrollFactor(0)
 
-        
+        let width = 400;
+        let height = 20;
+        let xStart = 300;
+        let yStart = 20;
 
+        // border size
+        let borderOffset = 2;
+
+        let borderRect = new Phaser.Geom.Rectangle(
+            xStart - borderOffset,
+            yStart - borderOffset,
+            width + borderOffset * 2,
+            height + borderOffset * 2);
+
+        let border = this.add.graphics({
+            lineStyle: {
+                width: 5,
+                color: 0xaaaaaa
+            }
+        });
+
+
+        border.strokeRectShape(borderRect);
+        border.setScrollFactor(0)
+
+        this.fuelBar = this.add.graphics();
+        this.fuelBar.setScrollFactor(0)
+        this.updateFuel()
+        
+        var fuelTime = this.time.addEvent({
+            delay: 500,                // ms
+            callback: function(){
+                if (!(this.landed) & this.shipFuel > 0){
+                    this.shipFuel -= 0.05
+                    this.updateFuel()
+                    if (this.shipFuel <= 0){
+                        this.ship.setVelocity(0,0)
+                        this.ship.setAngularVelocity(0)
+                        this.playerSpeed = 0
+                        this.shipTrail.visible = false
+                        camera.fadeOut(4000)
+                    }
+                }
+            },
+            callbackScope: this,
+            loop: true
+        });
+
+        this.cameras.main.once('camerafadeoutcomplete', function () {
+            this.gameOver();
+        }, this);
+
+        UIGroup.add(this.fuelBar)
+        UIGroup.add(border)
+
+        this.minimap.ignore(UIGroup)
     }
 
     update(){
@@ -109,48 +165,50 @@ class Play extends Phaser.Scene {
         this.shipTrail.angle = this.ship.angle
 
         if (Phaser.Input.Keyboard.JustDown(keySPACE)){
-            //this.sfx.play()
             this.minimap.setVisible(true)
         }
         if (Phaser.Input.Keyboard.JustUp(keySPACE)){
             this.minimap.setVisible(false)
         }
 
-        if (Phaser.Input.Keyboard.JustDown(keyUP)){
-            this.landing.active = false
-            this.landed = false
-            this.shipTrail.visible = true
-            this.changeDir(this.ship)
-            this.ship.setAngularVelocity(0)
-            var timer = this.time.addEvent({
-                delay: 750,                // ms
-                callback: function(){
-                    this.landing.active = true
-                },
-                callbackScope: this,
-                loop: false
-            });
-        }
-        if (!this.landed){
-            if(Phaser.Input.Keyboard.JustDown(keyRIGHT)){
-                this.changeDir(this.ship)
-                this.shipTrail.visible = false
-                this.ship.setAngularVelocity(120)     
-            }
-            if(Phaser.Input.Keyboard.JustUp(keyRIGHT)){
-                this.ship.setAngularVelocity(0)
+        if (this.shipFuel > 0){
+            this.playerSpeed = 300
+            if (Phaser.Input.Keyboard.JustDown(keyUP)){
+                this.landing.active = false
+                this.landed = false
                 this.shipTrail.visible = true
                 this.changeDir(this.ship)
-            }
-            if(Phaser.Input.Keyboard.JustDown(keyLEFT)){
-                this.changeDir(this.ship)
-                this.shipTrail.visible = false
-                this.ship.setAngularVelocity(-120)    
-            }
-            if(Phaser.Input.Keyboard.JustUp(keyLEFT)){
                 this.ship.setAngularVelocity(0)
-                this.shipTrail.visible = true
-                this.changeDir(this.ship)
+                var timer = this.time.addEvent({
+                    delay: 750,                // ms
+                    callback: function(){
+                        this.landing.active = true
+                    },
+                    callbackScope: this,
+                    loop: false
+                });
+            }
+            if (!(this.landed)){
+                if(Phaser.Input.Keyboard.JustDown(keyRIGHT)){
+                    this.changeDir(this.ship)
+                    this.shipTrail.visible = false
+                    this.ship.setAngularVelocity(120)     
+                }
+                if(Phaser.Input.Keyboard.JustUp(keyRIGHT)){
+                    this.ship.setAngularVelocity(0)
+                    this.shipTrail.visible = true
+                    this.changeDir(this.ship)
+                }
+                if(Phaser.Input.Keyboard.JustDown(keyLEFT)){
+                    this.changeDir(this.ship)
+                    this.shipTrail.visible = false
+                    this.ship.setAngularVelocity(-120)    
+                }
+                if(Phaser.Input.Keyboard.JustUp(keyLEFT)){
+                    this.ship.setAngularVelocity(0)
+                    this.shipTrail.visible = true
+                    this.changeDir(this.ship)
+                }
             }
         }
     }
@@ -160,9 +218,10 @@ class Play extends Phaser.Scene {
         this.scene.launch('pauseScene', { srcScene: "playScene" });
     }
 
-    createOrbit(radius, x, y){
+    createOrbit(radius, x, y, dir){
+        
         let orbit = this.add.path(x + radius, y)
-        orbit.circleTo(radius)
+        orbit.circleTo(radius, dir)
         return orbit
     }
 
@@ -218,9 +277,10 @@ class Play extends Phaser.Scene {
         let startingOrbit = 120
         while (i < maxOrb){
             startingOrbit += Phaser.Math.Between(120,360)
-            this.orbits.push(this.createOrbit(startingOrbit, galaxyMiddleX, galaxyMiddleY))
+            let dir = (Math.random() > 0.5)
+            this.orbits.push(this.createOrbit(startingOrbit, galaxyMiddleX, galaxyMiddleY, dir))
             this.orbits[i].draw(graphics)
-
+            
             let square = (Math.random() > 0.5)
             let detailed = (Math.random() > 0.5)
             let large = (Math.random() > 0.5)
@@ -234,7 +294,8 @@ class Play extends Phaser.Scene {
             let pos = Math.random()
             let angle = Phaser.Math.Between(20,60)
             color.random();
-            this.initPlanet(planet, time, pos, angle, color.color)
+            
+            this.initPlanet(planet, time, pos, angle, color.color, dir)
             if (Math.random() > 0.9){
                 color.random()
                 let colorA = color.color
@@ -252,5 +313,17 @@ class Play extends Phaser.Scene {
         }        
     }
 
+    gameOver(){
+        this.pause()
+    }
 
+    updateFuel(){
+        let width = 400;
+        let height = 20;
+        let xStart = 300;
+        let yStart = 20;
+        this.fuelBar.clear();
+        this.fuelBar.fillStyle(0xffffff, 1);
+        this.fuelBar.fillRect(xStart, yStart, this.shipFuel * width, height);
+    }
 }
