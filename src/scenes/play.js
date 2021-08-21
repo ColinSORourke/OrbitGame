@@ -13,8 +13,8 @@ class Play extends Phaser.Scene {
         let graphics = this.add.graphics();
 
 
-        let galaxySizeX = 2000
-        let galaxySizeY = 1500
+        let galaxySizeX = 4000
+        let galaxySizeY = 4000
         let galaxyMiddleX = galaxySizeX/2
         let galaxyMiddleY = galaxySizeY/2
 
@@ -41,47 +41,30 @@ class Play extends Phaser.Scene {
         this.star.body.angularVelocity = 30
         this.star.setScale(1.5)
 
-        
+        this.randomGalaxy(galaxyMiddleX, galaxyMiddleY)
 
-        // Create Orbit Path
-        this.orbit = this.createOrbit(300, galaxyMiddleX, galaxyMiddleY)
-        this.orbit.draw(graphics)
-
-        // Create Several Planets
-        let planets = this.add.group({
-            classType: Phaser.GameObjects.Sprite,
-            defaultKey: null,
-            defaultFrame: null,
-            active: true,
-            maxSize: -1,
-            runChildUpdate: true
-        })
-        console.log(planets)
-        let i = 0
-        while (i < 1){
-            let planet = this.createPlanet(this.orbit, false, true, true)
-            this.initPlanet(planet, 10000, i, 15, 0xA5FFD6)
-            planets.add(planet)
-            i += 0.2
-        }
-
-        this.ship = this.physics.add.sprite(game.config.width, game.config.height, 'Ship')
-        this.playerSpeed = 250
+        this.shipTrail = this.add.sprite(galaxyMiddleX, galaxyMiddleY, 'Trail').setScale(0.25)
+        this.ship = this.physics.add.sprite(galaxyMiddleX, galaxyMiddleY, 'Ship')
+        this.shipTrail.setOrigin(0.5,0)
+        this.playerSpeed = 300
         this.ship.body.setSize(64,64)
-        this.ship.setScale(0.5)
+        this.ship.setScale(0.3)
         this.changeDir(this.ship)
 
-        this.landing = this.physics.add.overlap(this.ship, planets, function(ship, planet){
+        this.landing = this.physics.add.overlap(this.ship, this.planets, function(ship, planet){
             ship.setVelocity(0,0)
             ship.x = planet.x
             ship.y = planet.y
             ship.body.angularVelocity = planet.body.angularVelocity
-        })
+            this.landed = true
+            this.shipTrail.visible = false
+        }, null, this)
 
         // set up main camera to follow the player
         this.cameras.main.setBounds(0, 0, galaxySizeX, galaxySizeY);
         this.cameras.main.setZoom(1);
         this.cameras.main.startFollow(this.ship);
+        this.minimap = this.cameras.add(game.config.width - 200, 0, 200, 200).setZoom(100/galaxySizeX).setName('mini');
 
         // Add Pause Button
         this.pauseButton = this.add.text(game.config.width/2, game.config.height - 25, 'PAUSE', 20).setOrigin(0.5)
@@ -90,15 +73,24 @@ class Play extends Phaser.Scene {
             this.pause();
         });
         this.pauseButton.setScrollFactor(0)
+
+        
+
     }
 
     update(){
+        this.shipTrail.x = this.ship.x
+        this.shipTrail.y = this.ship.y
+        this.shipTrail.angle = this.ship.angle
+
         if (Phaser.Input.Keyboard.JustDown(keySPACE)){
             this.landing.active = false
+            this.landed = false
+            this.shipTrail.visible = true
             this.changeDir(this.ship)
             this.ship.setAngularVelocity(0)
             var timer = this.time.addEvent({
-                delay: 2000,                // ms
+                delay: 750,                // ms
                 callback: function(){
                     this.landing.active = true
                 },
@@ -106,21 +98,27 @@ class Play extends Phaser.Scene {
                 loop: false
             });
         }
-        if(Phaser.Input.Keyboard.JustDown(keyRIGHT)){
-            this.changeDir(this.ship)
-            this.ship.setAngularVelocity(90)     
-        }
-        if(Phaser.Input.Keyboard.JustUp(keyRIGHT)){
-            this.ship.setAngularVelocity(0)
-            this.changeDir(this.ship)
-        }
-        if(Phaser.Input.Keyboard.JustDown(keyLEFT)){
-            this.changeDir(this.ship)
-            this.ship.setAngularVelocity(-90)    
-        }
-        if(Phaser.Input.Keyboard.JustUp(keyLEFT)){
-            this.ship.setAngularVelocity(0)
-            this.changeDir(this.ship)
+        if (!this.landed){
+            if(Phaser.Input.Keyboard.JustDown(keyRIGHT)){
+                this.changeDir(this.ship)
+                this.shipTrail.visible = false
+                this.ship.setAngularVelocity(120)     
+            }
+            if(Phaser.Input.Keyboard.JustUp(keyRIGHT)){
+                this.ship.setAngularVelocity(0)
+                this.shipTrail.visible = true
+                this.changeDir(this.ship)
+            }
+            if(Phaser.Input.Keyboard.JustDown(keyLEFT)){
+                this.changeDir(this.ship)
+                this.shipTrail.visible = false
+                this.ship.setAngularVelocity(-120)    
+            }
+            if(Phaser.Input.Keyboard.JustUp(keyLEFT)){
+                this.ship.setAngularVelocity(0)
+                this.shipTrail.visible = true
+                this.changeDir(this.ship)
+            }
         }
     }
 
@@ -135,9 +133,10 @@ class Play extends Phaser.Scene {
         return orbit
     }
 
-    createPlanet(path, square = true, detailed = true, large = true){
+    createPlanet(path, square = true, detailed = true, large = true, scale = 1){
         let s = path.getStartPoint()
         let planet = this.add.follower(path, s.x, s.y, "meteor_" + (square | 0) + (detailed | 0) + (large | 0))
+        planet.setScale(scale)
         this.physics.add.existing(planet)
         if (large){
             planet.body.setCircle(40, 24, 24)
@@ -148,7 +147,6 @@ class Play extends Phaser.Scene {
     }
 
     initPlanet(planet, orbitalSpd = 10000, startPnt = 0, angularSpd = 15, tint = 0xA5FFD6){
-        console.log(planet)
         planet.startFollow({
             duration: orbitalSpd,
             from: 0,
@@ -167,4 +165,60 @@ class Play extends Phaser.Scene {
         let newY = - ( Math.cos(direction) * this.playerSpeed )
         object.setVelocity(newX, newY)
     }
+
+    randomGalaxy(galaxyMiddleX, galaxyMiddleY){
+        let graphics = this.add.graphics();
+        const color = new Phaser.Display.Color();
+
+        this.planets = this.add.group({
+            classType: Phaser.GameObjects.Sprite,
+            defaultKey: null,
+            defaultFrame: null,
+            active: true,
+            maxSize: -1,
+            runChildUpdate: true
+        })
+
+        // Create Orbit Path
+        this.orbits = []
+        let i = 0
+        let maxOrb = Phaser.Math.Between(6,8)
+        let startingOrbit = 120
+        while (i < maxOrb){
+            startingOrbit += Phaser.Math.Between(120,360)
+            this.orbits.push(this.createOrbit(startingOrbit, galaxyMiddleX, galaxyMiddleY))
+            this.orbits[i].draw(graphics)
+
+            let square = (Math.random() > 0.5)
+            let detailed = (Math.random() > 0.5)
+            let large = (Math.random() > 0.5)
+            let size = (Math.random() + 0.6)
+            if (!(size < 1.1)){
+                size = 1
+            }
+            let planet = this.createPlanet(this.orbits[i], square, detailed, large, size)
+
+            let time = 5000 + (i+1) * 1500 + Phaser.Math.Between(1,20) * 750
+            let pos = Math.random()
+            let angle = Phaser.Math.Between(20,60)
+            color.random();
+            this.initPlanet(planet, time, pos, angle, color.color)
+            if (Math.random() > 0.9){
+                color.random()
+                let colorA = color.color
+                color.random()
+                let colorB = color.color
+                color.random()
+                let colorC = color.color
+                color.random()
+                let colorD = color.color
+                planet.setTint(colorA, colorB, colorC, colorD)
+            }
+
+            this.planets.add(planet)
+            i += 1
+        }        
+    }
+
+
 }
