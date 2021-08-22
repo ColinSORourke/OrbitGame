@@ -23,6 +23,9 @@ class Preload extends Phaser.Scene
         this.load.image('UISquare', './assets/uipack-space/PNG/glassPanel_cornerBR.png')
         this.load.image('Satellite', './assets/kenney_simplespace/PNG/Retina/satellite_A.png')
         this.load.image('Enemy', './assets/kenney_simplespace/PNG/Retina/enemy_A.png')
+        this.load.image('shipParticle','./assets/kenney_simplespace/PNG/Retina/star_tiny.png')
+        this.load.image('Tab', './assets/uipack-space/PNG/glassPanel_tab.png')
+        this.load.image('Theme', './assets/logo_brand.png')
 
         this.load.image('Panel','./assets/uipack-space/PNG/glassPanel_projection.png')
 
@@ -32,8 +35,14 @@ class Preload extends Phaser.Scene
 
         // https://twitter.com/everydaylouie/status/1253021154857508864 
         this.load.audio('Cycad', './assets/LZ_Greenhouse/CycadConga.mp3')
+        this.load.audio('Waltz', './assets/LZ_Greenhouse/WaltzFlower.mp3')
 
-        //this.load.audio('test', './assets/spaceshooter/Bonus/sfx_twoTone.ogg')
+        this.load.audio('landSound', './assets/kenney_digitalAudio/lowDown.ogg')
+        this.load.audio('jumpSound', './assets/kenney_digitalAudio/pepSound3.ogg')
+        this.load.audio('scoreSound', './assets/kenney_digitalAudio/threeTone2.ogg')
+        this.load.audio('button', './assets/kenney_digitalAudio/tone1.ogg')
+        this.load.audio('jumpSlow', './assets/kenney_digitalAudio/lowRandom.ogg')
+        this.load.audio('launchSound', './assets/kenney_digitalAudio/lowThreeTone.ogg')
 
         this.createProgressbar(game.config.width / 2, game.config.height / 2);
     }

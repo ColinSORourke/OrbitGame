@@ -19,6 +19,7 @@ class Gameover extends Phaser.Scene {
         var resetButton = this.add.text(game.config.width/2, game.config.height/2, 'RESET', { fontFamily: 'font1', fontSize: 50}).setOrigin(0.5);
         resetButton.setInteractive();
         resetButton.on('pointerdown', () => {
+            game.button.play()
             this.scene.stop(this.pausedScene);
             this.scene.start('playScene');
         });
@@ -26,6 +27,7 @@ class Gameover extends Phaser.Scene {
         var menuButton = this.add.text(game.config.width/2, game.config.height*0.7, 'Menu', { fontFamily: 'font1', fontSize: 50}).setOrigin(0.5);
         menuButton.setInteractive();
         menuButton.on('pointerdown', () => {
+            game.button.play()
             this.scene.stop(this.pausedScene);
             this.scene.start('menuScene');
         });

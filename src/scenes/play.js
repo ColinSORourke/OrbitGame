@@ -9,6 +9,18 @@ class Play extends Phaser.Scene {
         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT)
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT)
 
+        this.sfxConfig =  {
+            mute: false,
+            volume: 1,
+            rate: 1,
+            detune: 0,
+            seek: 0,
+            loop: false,
+            delay: 0
+          };
+
+        this.scoreSound = this.sound.add("scoreSound", this.sfxConfig)
+
         let galaxySizeX = 4200
         let galaxySizeY = 4200
         let galaxyMiddleX = galaxySizeX/2
@@ -21,7 +33,7 @@ class Play extends Phaser.Scene {
 
         // Add Sun in Center
         var particles = this.add.particles('starParticle');
-        var emitter = particles.createEmitter({
+        particles.createEmitter({
             x: galaxyMiddleX,
             y: galaxyMiddleY,
             speed: 80,
@@ -32,6 +44,16 @@ class Play extends Phaser.Scene {
             alpha: {min: 0.25, max: 0.75},
             scale: {min: 0.6, max: 1.2}
         })
+        this.successParticles = this.add.particles('starParticle')
+        this.successParticles.createEmitter({
+            speed: { min: 200, max: 300 },
+            quantity: 8,
+            lifespan: 800,
+            alpha: { start: 1, end: 0 },
+            scale: { start: 1.5, end: 0.5 },
+            on: false
+        });
+
         this.starBG = this.physics.add.sprite(galaxyMiddleX, galaxyMiddleY, 'starB').setScale(2)
         this.starBG.setTint(0xE9D758)
         this.star = this.physics.add.sprite(galaxyMiddleX, galaxyMiddleY, 'starA').setTint(0xFFAB45)
@@ -55,7 +77,7 @@ class Play extends Phaser.Scene {
         this.cameras.main.setBounds(0, 0, galaxySizeX, galaxySizeY);
         this.cameras.main.setZoom(1);
         this.cameras.main.startFollow(this.ship);
-        this.minimap = this.cameras.add(300, 175, 400, 400).setZoom(400/galaxySizeX).setName('mini');
+        this.minimap = this.cameras.add(200, 75, 600, 600).setZoom(600/galaxySizeX).setName('mini');
         this.minimap.centerOn(galaxyMiddleX, galaxyMiddleY)
         this.minimap.setVisible(false)
         this.minimap.ignore(BG)
@@ -84,7 +106,13 @@ class Play extends Phaser.Scene {
         this.missionBar = this.add.graphics();
         this.missionBar.setScrollFactor(0)
         this.missionBar.fillStyle(0xffffff, 1);
+        this.missionText = this.add.text(100, 20, 'Target', { fontFamily: 'font1', fontSize: 20}).setOrigin(0.5,0.5)
+        this.missionText.setScrollFactor(0)
+        this.scoreLabel = this.add.text(game.config.width - 100, 20, 'Score', { fontFamily: 'font1', fontSize: 20}).setOrigin(0.5,0.5)
+        this.scoreLabel.setScrollFactor(0)
         this.UIGroup.add(this.scoreSquare)
+        this.UIGroup.add(this.missionText)
+        this.UIGroup.add(this.scoreLabel)
         this.UIGroup.add(this.scoreText)
         this.UIGroup.add(this.missionSquare)
         this.UIGroup.add(this.missionBar)
@@ -102,6 +130,8 @@ class Play extends Phaser.Scene {
                 this.missionBar.fillRect(20, 160, Math.max(0, this.missionTimer) * 160, 20);
                 if (this.ship.on == this.toVisit.name){
                     // Player wins!
+                    this.scoreSound.play()
+                    this.successParticles.emitParticleAt(this.ship.x, this.ship.y);
                     this.score += 50 + Math.ceil (30 * this.missionTimer)
                     this.scoreText.text = this.score
                     this.pickMission()
@@ -135,9 +165,13 @@ class Play extends Phaser.Scene {
 
     addEnemy(){
         let i = Phaser.Math.Between(0, this.planetList.length-1)
+        while ("Planet" + i == this.ship.on){
+            i = Phaser.Math.Between(0, this.planetList.length-1)
+        }
         let path = this.orbits[i]
         let s = path.getStartPoint()
         let enemy = this.add.follower(path, s.x, s.y, "Enemy")
+        enemy.setTint(0x993955)
         this.physics.add.existing(enemy)
         let orbitalSpd = 6000 + (i+1) * 2250 + Phaser.Math.Between(1,10) * 750 
         let startPnt = Math.random()
@@ -183,6 +217,8 @@ class Play extends Phaser.Scene {
             this.satellite.body.angularVelocity = Phaser.Math.Between(-30, 30)
             this.satellite.body.setSize(80,80)
             this.physics.add.overlap(this.ship, this.satellite, function(){
+                this.scoreSound.play()
+                this.successParticles.emitParticleAt(this.ship.x, this.ship.y);
                 this.score += 150
                 this.scoreText.text = this.score
                 this.satellite.destroy()
@@ -211,6 +247,7 @@ class Play extends Phaser.Scene {
     }
 
     pause() {
+        game.button.play()
         this.scene.launch('pauseScene', { srcScene: "playScene" });
         this.scene.pause();
     }

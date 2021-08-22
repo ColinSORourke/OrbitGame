@@ -7,6 +7,23 @@ class Ship extends Phaser.GameObjects.Sprite {
         this.scene = scene
         let ship = this
 
+        this.sfxConfig = scene.sfxConfig
+        this.boostSound = scene.sound.add("jumpSound", this.sfxConfig)
+        this.turnSound = scene.sound.add("jumpSlow", this.sfxConfig)
+        this.landSound = scene.sound.add("landSound", this.sfxConfig)
+        this.launchSound = scene.sound.add("launchSound", this.sfxConfig)
+
+        this.particles = scene.add.particles('shipParticle');
+        this.particles.createEmitter({
+            angle: { min: 240, max: 300 },
+            speed: { min: 200, max: 300 },
+            quantity: 8,
+            lifespan: 800,
+            alpha: { start: 1, end: 0 },
+            scale: { start: 1.5, end: 0.5 },
+            tint: 0x6457A6,
+            on: false
+        });
 
         scene.physics.world.enable(this)
         scene.add.existing(this)
@@ -74,6 +91,7 @@ class Ship extends Phaser.GameObjects.Sprite {
         if (!this.empty){
             this.speed = 300
             if (Phaser.Input.Keyboard.JustDown(keyUP)){
+                this.launchSound.play()
                 this.scene.planetCollider.active = false
                 this.landed = false
                 this.on = false
@@ -99,8 +117,11 @@ class Ship extends Phaser.GameObjects.Sprite {
                 if(Phaser.Input.Keyboard.JustUp(keyRIGHT)){
                     this.body.setAngularVelocity(0)
                     if (Math.abs(this.origAngle - this.angle) > 160 && Math.abs(this.origAngle - this.angle) < 200){
+                        this.boostSound.play()
+                        this.particles.emitParticleAt(this.x, this.y);
                         this.snapDirection(this.speed + 140)
                     } else {
+                        this.turnSound.play()
                         this.snapDirection()
                     }
                     
@@ -115,8 +136,11 @@ class Ship extends Phaser.GameObjects.Sprite {
                 if(Phaser.Input.Keyboard.JustUp(keyLEFT)){
                     this.body.setAngularVelocity(0)
                     if (Math.abs(this.origAngle - this.angle) > 160 && Math.abs(this.origAngle - this.angle) < 190){
+                        this.boostSound.play()
+                        this.particles.emitParticleAt(this.x, this.y);
                         this.snapDirection(this.speed + 140)
                     } else {
+                        this.turnSound.play()
                         this.snapDirection()
                     }
                 }
@@ -126,6 +150,7 @@ class Ship extends Phaser.GameObjects.Sprite {
 
     land(ship, planet){
         if (!ship.landed){
+            ship.landSound.play()
             ship.body.setVelocity(0,0)
             ship.body.angularVelocity = planet.body.angularVelocity
             if (ship.empty){
