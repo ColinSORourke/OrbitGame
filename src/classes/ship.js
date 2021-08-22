@@ -92,7 +92,6 @@ class Ship extends Phaser.GameObjects.Sprite {
                     this.origAngle = this.angle
                     this.fuel -= 0.03
                     this.trail.visible = false
-                    this.angle += 22
                     this.body.setAngularVelocity(240)     
                 }
                 if(Phaser.Input.Keyboard.JustUp(keyRIGHT)){
@@ -109,7 +108,6 @@ class Ship extends Phaser.GameObjects.Sprite {
                     this.origAngle = this.angle
                     this.fuel -= 0.03
                     this.trail.visible = false
-                    this.angle -= 22
                     this.body.setAngularVelocity(-240)    
                 }
                 if(Phaser.Input.Keyboard.JustUp(keyLEFT)){
