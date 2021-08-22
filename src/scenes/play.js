@@ -17,6 +17,7 @@ class Play extends Phaser.Scene {
         let camera = this.cameras.main
         let BG = this.add.tileSprite(-400,-400, 5000, 5000, "BG").setOrigin(0,0)
         this.UIGroup = this.add.group()
+        this.EnemyGroup = this.add.group()
 
         // Add Sun in Center
         var particles = this.add.particles('starParticle');
@@ -47,7 +48,6 @@ class Play extends Phaser.Scene {
         this.ship = new Ship(this, randomPlanet.x, randomPlanet.y, 'Ship', null)
         this.planetCollider = this.physics.add.overlap(this.ship, this.planets, this.ship.land, null, this)
         this.sunCollider = this.physics.add.overlap(this.ship, this.star, this.gameOver, null, this)
-
 
         // set up main camera to follow the player
         this.cameras.main.setBounds(0, 0, galaxySizeX, galaxySizeY);
@@ -95,21 +95,23 @@ class Play extends Phaser.Scene {
         this.time.addEvent({
             delay: 500, //ms
             callback: function() {
-                this.missionTimer -= 0.005
+                this.missionTimer -= 0.015
                 this.missionBar.clear();
                 this.missionBar.fillRect(20, 160, Math.max(0, this.missionTimer) * 160, 20);
                 if (this.ship.on == this.toVisit.name){
                     // Player wins!
                     console.log("Ship landed on the right planet!")
-                    this.score += Math.ceil(100 * this.missionTimer)
+                    this.score += 50 + Math.ceil (30 * this.missionTimer)
                     this.scoreText.text = this.score
                     this.pickMission()
                 }
                 else if (this.missionTimer <= 0){
                     // Player missed a goal
-                    this.score -= 50
+                    this.score -= 65
                     this.scoreText.text = this.score
-                    this.satellite.destroy()
+                    if (this.satellite){
+                        this.satellite.destroy()
+                    }
                     this.pickMission()
                 }
             },
@@ -117,9 +119,39 @@ class Play extends Phaser.Scene {
             loop: true
         })
 
+        this.time.addEvent({
+            delay: 15000, //ms
+            callback: this.addEnemy,
+            callbackScope: this,
+            loop: true
+        })
+
+
 
         this.UIGroup.add(this.pauseButton)
         this.minimap.ignore(this.UIGroup)
+    }
+
+    addEnemy(){
+        let i = Phaser.Math.Between(0, this.planetList.length-1)
+        let path = this.orbits[i]
+        let s = path.getStartPoint()
+        let enemy = this.add.follower(path, s.x, s.y, "Enemy")
+        this.physics.add.existing(enemy)
+        let orbitalSpd = 6000 + (i+1) * 2250 + Phaser.Math.Between(1,10) * 750 
+        let startPnt = Math.random()
+        enemy.startFollow({
+            duration: orbitalSpd,
+            from: 0,
+            to: 1,
+            startAt: startPnt,
+            repeat: -1
+        })
+        enemy.body.angularVelocity = Phaser.Math.Between(-30, 30)
+        enemy.body.setSize(80,80)
+        this.EnemyGroup.add(enemy)
+        this.enemyCollider = this.physics.add.overlap(this.ship, this.EnemyGroup, this.gameOver, null, this)
+
     }
 
     pickMission(){
@@ -135,7 +167,7 @@ class Play extends Phaser.Scene {
             this.physics.add.existing(this.satellite)
             this.toVisit.destroy()
             this.toVisit = this.clonePlanet(this.satellite)
-            this.minimap.ignore(this.toVisit)
+            
             let orbitalSpd = 6000 + (i+1) * 2250 + Phaser.Math.Between(1,10) * 750 
             let startPnt = Math.random()
             this.satellite.startFollow({
@@ -148,11 +180,12 @@ class Play extends Phaser.Scene {
             this.satellite.body.angularVelocity = Phaser.Math.Between(-30, 30)
             this.satellite.body.setSize(80,80)
             this.physics.add.overlap(this.ship, this.satellite, function(){
-                this.score += 200
+                this.score += 150
                 this.satellite.destroy()
                 this.pickMission()
             }, null, this)
-            this.missionTimer = 0.5
+            this.minimap.ignore(this.toVisit)
+            this.missionTimer = 0.75
         } else {
             this.toVisit.destroy()
             this.toVisit = this.planetList[i]
@@ -174,8 +207,8 @@ class Play extends Phaser.Scene {
     }
 
     pause() {
-        this.scene.pause();
         this.scene.launch('pauseScene', { srcScene: "playScene" });
+        this.scene.pause();
     }
 
     createOrbit(radius, x, y, dir){
@@ -287,6 +320,8 @@ class Play extends Phaser.Scene {
     }
 
     gameOver(){
-        this.pause()
+        console.log("Game over function here")
+        this.scene.launch('gameoverScene', { srcScene: "playScene" });
+        this.scene.pause();
     }
 }

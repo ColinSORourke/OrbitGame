@@ -2,12 +2,12 @@ let config = {
     type: Phaser.WEBGL,
     width: 1000,
     height: 750,
-    scene: [Preload, Menu, Play, Pause],
+    scene: [Preload, Menu, Play, Pause, Gameover],
     physics: {
         default: 'arcade',
         arcade: {
             gravity: { y: 0 },
-            debug: false
+            debug: true
         }
     },
   }

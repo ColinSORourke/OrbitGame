@@ -1,6 +1,6 @@
-class Pause extends Phaser.Scene {
+class Gameover extends Phaser.Scene {
     constructor() {
-        super("pauseScene");
+        super("gameoverScene");
     }
     
     init(data){
@@ -10,7 +10,7 @@ class Pause extends Phaser.Scene {
     create(){
         var spacing = 64;
 
-        console.log("Paused")
+        console.log("We're in Game Over")
 
         // Add Reset text & button
         var resetButton = this.add.text(game.config.width/2, game.config.height/3, 'RESET', { fontFamily: 'font1', fontSize: 50}).setOrigin(0.5);
@@ -25,14 +25,6 @@ class Pause extends Phaser.Scene {
         menuButton.on('pointerdown', () => {
             this.scene.stop(this.pausedScene);
             this.scene.start('menuScene');
-        });
-
-        // Add Back text & button
-        var backButton = this.add.text(game.config.width/2, game.config.height * (2/3), 'BACK', { fontFamily: 'font1', fontSize: 50}).setOrigin(0.5);
-        backButton.setInteractive();
-        backButton.on('pointerdown', () => {
-            this.scene.resume(this.pausedScene);
-            this.scene.stop();
         });
     }
 }

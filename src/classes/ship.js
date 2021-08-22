@@ -60,15 +60,14 @@ class Ship extends Phaser.GameObjects.Sprite {
         });
 
         this.snapDirection()
-
-        console.log("All done!")
-        console.log(this)
+        this.origAngle = 0
     }
 
     update(){
         this.trail.x = this.x
         this.trail.y = this.y
         this.trail.angle = this.angle
+        
 
         if (!this.empty){
             this.speed = 300
@@ -89,24 +88,37 @@ class Ship extends Phaser.GameObjects.Sprite {
             }
             if (!(this.landed)){
                 if(Phaser.Input.Keyboard.JustDown(keyRIGHT)){
-                    this.snapDirection()
+                    this.snapDirection(this.speed - 180)
+                    this.origAngle = this.angle
                     this.fuel -= 0.03
                     this.trail.visible = false
-                    this.body.setAngularVelocity(150)     
+                    this.angle += 22
+                    this.body.setAngularVelocity(240)     
                 }
                 if(Phaser.Input.Keyboard.JustUp(keyRIGHT)){
                     this.body.setAngularVelocity(0)
-                    this.snapDirection()
+                    if (Math.abs(this.origAngle - this.angle) > 160 && Math.abs(this.origAngle - this.angle) < 200){
+                        this.snapDirection(this.speed + 140)
+                    } else {
+                        this.snapDirection()
+                    }
+                    
                 }
                 if(Phaser.Input.Keyboard.JustDown(keyLEFT)){
-                    this.snapDirection()
+                    this.snapDirection(this.speed - 180)
+                    this.origAngle = this.angle
                     this.fuel -= 0.03
                     this.trail.visible = false
-                    this.body.setAngularVelocity(-150)    
+                    this.angle -= 22
+                    this.body.setAngularVelocity(-240)    
                 }
                 if(Phaser.Input.Keyboard.JustUp(keyLEFT)){
                     this.body.setAngularVelocity(0)
-                    this.snapDirection()
+                    if (Math.abs(this.origAngle - this.angle) > 160 && Math.abs(this.origAngle - this.angle) < 190){
+                        this.snapDirection(this.speed + 140)
+                    } else {
+                        this.snapDirection()
+                    }
                 }
             }
         }
@@ -130,17 +142,16 @@ class Ship extends Phaser.GameObjects.Sprite {
         ship.y = planet.y
     }
 
-    snapDirection(){
+    snapDirection(speed = this.speed){
         let direction = this.angle * (Math.PI/180)
-        let newX = Math.sin(direction) * this.speed
-        let newY = - ( Math.cos(direction) * this.speed )
+        let newX = Math.sin(direction) * speed
+        let newY = - ( Math.cos(direction) * speed )
         this.body.setVelocity(newX, newY)
         this.trail.visible = true
         this.updateFuel()
     }
 
     updateFuel(){
-        console.log(this.fuel)
         let width = 400;
         let height = 20;
         let xStart = 300;
