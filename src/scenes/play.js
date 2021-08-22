@@ -361,6 +361,9 @@ class Play extends Phaser.Scene {
     }
 
     gameOver(cause){
+        if (this.score > game.highScore){
+            game.highScore = this.score
+        }
         this.UIGroup.setVisible(false)
         this.scene.launch('gameoverScene', { srcScene: "playScene", string: cause, score: this.score });
         this.scene.pause();

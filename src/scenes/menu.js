@@ -7,6 +7,9 @@ class Menu extends Phaser.Scene {
     this.BG = this.add.tileSprite(0,0, 1000, 750, "BG").setOrigin(0,0)
     this.shipTrail = this.add.sprite(game.config.width/2, 620, "Trail").setOrigin(0.5,0)
     this.ship = this.add.sprite(game.config.width/2, 600, "Ship")
+    if (!game.highScore){
+      game.highScore = 0
+    }
     
     
     // Add music
@@ -58,6 +61,10 @@ class Menu extends Phaser.Scene {
     let controls2 = this.add.text(750, game.config.height/3 + 80, 'Up arrow to lift off planet', { fontFamily: 'font1', fontSize: 18}).setOrigin(0.5,0.5)
     let controls3 = this.add.text(750, game.config.height/3 + 120, 'Do a 180 spin for a speed boost', { fontFamily: 'font1', fontSize: 18}).setOrigin(0.5,0.5)
     let controls4 = this.add.text(750, game.config.height/3 + 160, 'Press space for a galaxy map', { fontFamily: 'font1', fontSize: 18}).setOrigin(0.5,0.5)
+    if (game.highScore > 0){
+      let controls5 = this.add.text(750, game.config.height/3 + 260, "Your High Score is: " + game.highScore, { fontFamily: 'font1', fontSize: 24}).setOrigin(0.5,0.5)
+    }
+    
 
     let panel2 = this.add.sprite(0, game.config.height - 40, 'Tab').setScale(3).setOrigin(0,0)
     panel2.setInteractive();
