@@ -30,6 +30,7 @@ class Preload extends Phaser.Scene
         this.load.image('Panel','./assets/uipack-space/PNG/glassPanel_projection.png')
 
         this.load.image('BG', './assets/spaceshooter/Backgrounds/blue.png')
+        this.load.image('Logo', './assets/SpinStarTrans.png')
 
         this.load.svg('FullSet', './assets/kenney_simplespace/Vector/simpleSpace_vector.svg', { scale: 1})
 

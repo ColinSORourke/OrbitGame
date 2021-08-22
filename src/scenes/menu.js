@@ -39,6 +39,9 @@ class Menu extends Phaser.Scene {
     game.button = this.sound.add('button', this.sfxConfig)
     game.menuAmbience.play();
 
+    let logo = this.physics.add.sprite(200,200, 'Logo').setScale(0.5)
+    logo.setAngularVelocity(5)
+
     // Start Button
     let startButton = this.add.text(350, game.config.height/2, 'LAUNCH', { fontFamily: 'font1', fontSize: 50}).setOrigin(0.5,0.5)
     startButton.setInteractive();
