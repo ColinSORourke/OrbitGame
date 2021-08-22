@@ -47,7 +47,9 @@ class Play extends Phaser.Scene {
 
         this.ship = new Ship(this, randomPlanet.x, randomPlanet.y, 'Ship', null)
         this.planetCollider = this.physics.add.overlap(this.ship, this.planets, this.ship.land, null, this)
-        this.sunCollider = this.physics.add.overlap(this.ship, this.star, this.gameOver, null, this)
+        this.sunCollider = this.physics.add.overlap(this.ship, this.star, function(){
+            this.gameOver("Flew into the sun. \nOuch.")
+        }, null, this)
 
         // set up main camera to follow the player
         this.cameras.main.setBounds(0, 0, galaxySizeX, galaxySizeY);
@@ -68,7 +70,7 @@ class Play extends Phaser.Scene {
 
         this.cameras.main.once('camerafadeoutcomplete', function () {
             this.minimap.visible = false
-            this.gameOver();
+            this.gameOver("Out of fuel.");
         }, this);
 
         this.missionSquare = this.add.sprite(0,0, 'UISquare').setOrigin(0,0)
@@ -100,7 +102,6 @@ class Play extends Phaser.Scene {
                 this.missionBar.fillRect(20, 160, Math.max(0, this.missionTimer) * 160, 20);
                 if (this.ship.on == this.toVisit.name){
                     // Player wins!
-                    console.log("Ship landed on the right planet!")
                     this.score += 50 + Math.ceil (30 * this.missionTimer)
                     this.scoreText.text = this.score
                     this.pickMission()
@@ -150,7 +151,9 @@ class Play extends Phaser.Scene {
         enemy.body.angularVelocity = Phaser.Math.Between(-30, 30)
         enemy.body.setSize(80,80)
         this.EnemyGroup.add(enemy)
-        this.enemyCollider = this.physics.add.overlap(this.ship, this.EnemyGroup, this.gameOver, null, this)
+        this.enemyCollider = this.physics.add.overlap(this.ship, this.EnemyGroup, function(){
+            this.gameOver("Dangerous collision.")
+        }, null, this)
 
     }
 
@@ -181,6 +184,7 @@ class Play extends Phaser.Scene {
             this.satellite.body.setSize(80,80)
             this.physics.add.overlap(this.ship, this.satellite, function(){
                 this.score += 150
+                this.scoreText.text = this.score
                 this.satellite.destroy()
                 this.pickMission()
             }, null, this)
@@ -319,9 +323,9 @@ class Play extends Phaser.Scene {
         return newPlanet
     }
 
-    gameOver(){
-        console.log("Game over function here")
-        this.scene.launch('gameoverScene', { srcScene: "playScene" });
+    gameOver(cause){
+        this.UIGroup.setVisible(false)
+        this.scene.launch('gameoverScene', { srcScene: "playScene", string: cause, score: this.score });
         this.scene.pause();
     }
 }

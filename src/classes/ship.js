@@ -43,8 +43,10 @@ class Ship extends Phaser.GameObjects.Sprite {
         this.fuelBar = scene.add.graphics();
         this.fuelBar.setScrollFactor(0)
         this.updateFuel()
-
+        let fuelText = scene.add.text(xStart + width/2, yStart + 35, "Fuel", { fontFamily: 'font1', fontSize: 25}).setOrigin(0.5,0.5)
+        fuelText.setScrollFactor(0)
         scene.UIGroup.add(border)
+        scene.UIGroup.add(fuelText)
         scene.UIGroup.add(this.fuelBar)
 
         var fuelTime = this.scene.time.addEvent({
@@ -155,7 +157,7 @@ class Ship extends Phaser.GameObjects.Sprite {
         let xStart = 300;
         let yStart = 20;
         this.fuelBar.clear();
-        this.fuelBar.fillStyle(0xffffff, 1);
+        this.fuelBar.fillStyle(0x9FD8CB, 1);
         this.fuelBar.fillRect(xStart, yStart, Math.max(0, this.fuel) * width, height);
         if (this.fuel <= 0){
             this.body.setVelocity(0,0)

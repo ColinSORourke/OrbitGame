@@ -24,6 +24,8 @@ class Preload extends Phaser.Scene
         this.load.image('Satellite', './assets/kenney_simplespace/PNG/Retina/satellite_A.png')
         this.load.image('Enemy', './assets/kenney_simplespace/PNG/Retina/enemy_A.png')
 
+        this.load.image('Panel','./assets/uipack-space/PNG/glassPanel_projection.png')
+
         this.load.image('BG', './assets/spaceshooter/Backgrounds/blue.png')
 
         this.load.svg('FullSet', './assets/kenney_simplespace/Vector/simpleSpace_vector.svg', { scale: 1})
