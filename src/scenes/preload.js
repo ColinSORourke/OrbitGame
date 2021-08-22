@@ -38,12 +38,12 @@ class Preload extends Phaser.Scene
         this.load.audio('Cycad', './assets/LZ_Greenhouse/CycadConga.mp3')
         this.load.audio('Waltz', './assets/LZ_Greenhouse/WaltzFlower.mp3')
 
-        this.load.audio('landSound', './assets/kenney_digitalAudio/lowDown.ogg')
-        this.load.audio('jumpSound', './assets/kenney_digitalAudio/pepSound3.ogg')
-        this.load.audio('scoreSound', './assets/kenney_digitalAudio/threeTone2.ogg')
-        this.load.audio('button', './assets/kenney_digitalAudio/tone1.ogg')
-        this.load.audio('jumpSlow', './assets/kenney_digitalAudio/lowRandom.ogg')
-        this.load.audio('launchSound', './assets/kenney_digitalAudio/lowThreeTone.ogg')
+        this.load.audio('landSound', './assets/kenney_digitalAudio/lowDown.mp3')
+        this.load.audio('jumpSound', './assets/kenney_digitalAudio/pepSound3.mp3')
+        this.load.audio('scoreSound', './assets/kenney_digitalAudio/threeTone2.mp3')
+        this.load.audio('button', './assets/kenney_digitalAudio/tone1.mp3')
+        this.load.audio('jumpSlow', './assets/kenney_digitalAudio/lowRandom.mp3')
+        this.load.audio('launchSound', './assets/kenney_digitalAudio/lowThreeTone.mp3')
 
         this.createProgressbar(game.config.width / 2, game.config.height / 2);
     }
