@@ -27,7 +27,7 @@ class Play extends Phaser.Scene {
         let galaxyMiddleY = galaxySizeY/2
 
         let camera = this.cameras.main
-        let BG = this.add.tileSprite(-400,-400, 5000, 5000, "BG").setOrigin(0,0)
+        let BG = this.add.tileSprite(0,0, 2200, 2200, "BG").setOrigin(0,0).setScrollFactor(0.25);
         this.UIGroup = this.add.group()
         this.EnemyGroup = this.add.group()
 
